@@ -1,0 +1,10 @@
+{
+  "name": "@trabajos/web",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Estructura base del Panel Web Administrador (React + Vite + Tailwind CSS). Sin UI en Fase 0.",
+  "dependencies": {
+    "@trabajos/services": "workspace:*",
+    "@trabajos/theme": "workspace:*"
+  }
+}

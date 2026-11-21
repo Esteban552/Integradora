@@ -1,0 +1,10 @@
+{
+  "name": "@trabajos/services",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Capa única de servicios: lee JSON simulado en Fase 0 y llamará a las RPC de Supabase (sección 5.4) en Fase 1+",
+  "main": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts"
+  }
+}

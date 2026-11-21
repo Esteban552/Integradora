@@ -1,0 +1,12 @@
+{
+  "name": "trabajos-temporales-monorepo",
+  "private": true,
+  "description": "Estructura base (Fase 0) — Sistema Multiplataforma de Trabajos Temporales",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}
