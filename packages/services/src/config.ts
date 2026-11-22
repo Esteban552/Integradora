@@ -5,7 +5,7 @@ export type DataSource = 'mock' | 'supabase';
  * - Fase 0: 'mock' (lee los JSON internos de packages/services/src/mocks/).
  * - Fase 1+: 'supabase' (llama a supabase.rpc(...) y consultas RLS definidas en 001_trabajos_temporales.sql).
  *
- * REGLA ESTRICTA: Ninguna pantalla en apps/mobile o apps/web puede importar JSON de mocks/ directamente.
+ * REGLA ESTRICTA: Ninguna pantalla en apps/employer, apps/worker o apps/web puede importar JSON de mocks/ directamente.
  */
 export interface ServiceConfig {
   dataSource: DataSource;

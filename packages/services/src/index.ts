@@ -1,7 +1,7 @@
 /**
  * Punto único de entrada para la capa de servicios (@trabajos/services).
  *
- * REGLA: Las pantallas de apps/mobile y apps/web SOLO importan desde aquí
+ * REGLA: Las pantallas de apps/employer, apps/worker y apps/web SOLO importan desde aquí
  * (o desde su re-exportación local `src/services`). Nunca leen JSON directamente.
  */
 export { configureServices, getServiceConfig } from './config';

@@ -4,11 +4,36 @@
     "event_type": "payment_intent.created",
     "payload": {
       "payment_intent": "pi_mock_0001",
+      "amount": 85800,
+      "currency": "mxn"
+    },
+    "received_at": "2026-11-21T17:10:30-07:00",
+    "processed_at": "2026-11-21T17:10:31-07:00",
+    "error_message": null
+  },
+  {
+    "id": "evt_mock_0002",
+    "event_type": "payment_intent.succeeded",
+    "payload": {
+      "payment_intent": "pi_mock_0002",
+      "amount": 99000,
+      "currency": "mxn"
+    },
+    "received_at": "2026-11-21T14:51:58-07:00",
+    "processed_at": "2026-11-21T14:52:00-07:00",
+    "error_message": null
+  },
+  {
+    "id": "evt_mock_0003",
+    "event_type": "transfer.failed",
+    "payload": {
+      "payment_intent": "pi_mock_0006",
+      "destination": "acct_mock_worker_001",
       "amount": 55000,
       "currency": "mxn"
     },
-    "received_at": "2026-11-21T08:31:00-07:00",
-    "processed_at": "2026-11-21T08:31:01-07:00",
-    "error_message": null
+    "received_at": "2026-11-17T13:09:50-07:00",
+    "processed_at": "2026-11-17T13:10:00-07:00",
+    "error_message": "insufficient_funds_in_balance"
   }
 ]

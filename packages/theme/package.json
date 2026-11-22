@@ -4,6 +4,9 @@
   "private": true,
   "description": "Tokens de diseño compartidos entre App Móvil (React Native) y Panel Web (Tailwind CSS)",
   "main": "./index.ts",
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
   "exports": {
     ".": "./index.ts",
     "./tokens": "./tokens.ts",

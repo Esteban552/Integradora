@@ -2,11 +2,23 @@
   "name": "trabajos-temporales-monorepo",
   "private": true,
   "description": "Estructura base (Fase 0) — Sistema Multiplataforma de Trabajos Temporales",
+  "packageManager": "pnpm@10.33.0",
   "workspaces": [
     "apps/*",
     "packages/*"
   ],
+  "scripts": {
+    "dev:web": "pnpm --filter @trabajos/web dev",
+    "build:web": "pnpm --filter @trabajos/web build",
+    "start:employer": "pnpm --filter @trabajos/employer start",
+    "start:worker": "pnpm --filter @trabajos/worker start",
+    "typecheck": "pnpm -r --if-present typecheck"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.2"
+  },
   "engines": {
-    "node": ">=20.0.0"
+    "node": ">=20.0.0",
+    "pnpm": ">=9.0.0"
   }
 }

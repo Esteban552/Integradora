@@ -1,0 +1,16 @@
+{
+  "expo": {
+    "name": "Trabajos Temporales — Empleador",
+    "slug": "trabajos-employer",
+    "version": "0.1.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "newArchEnabled": true,
+    "android": {
+      "package": "com.trabajos.employer"
+    },
+    "ios": {
+      "bundleIdentifier": "com.trabajos.employer"
+    }
+  }
+}

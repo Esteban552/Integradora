@@ -1,89 +1,93 @@
 # Sistema Multiplataforma de Trabajos Temporales — Fase 0 (Estructura)
 
-Monorepo base para que móvil, web y backend trabajen en paralelo sin desorden. Referencia: **Especificación de Arquitectura v2** (SRS v1.4) y esquema fuente única de verdad en `supabase/migrations/001_trabajos_temporales.sql`.
+Monorepo **pnpm** listo para que Empleador, Trabajador, Panel Web y Backend construyan en paralelo sin desorden. Referencia: **Especificación de Arquitectura v2** (SRS v1.4) y esquema único en `supabase/migrations/001_trabajos_temporales.sql`.
 
 ---
 
-## 1. Estructura del repositorio (Monorepo con workspaces)
+## 1. Requisitos e inicio rápido (**pnpm obligatorio**)
+
+Este monorepo utiliza dependencias `workspace:*` gestionadas con **pnpm** (`packageManager: pnpm@10.33.0`). No usar `npm install` ni `yarn`.
+
+```bash
+pnpm install              # Instala dependencias de todas las apps y paquetes
+pnpm typecheck            # Verifica TypeScript en todo el monorepo
+pnpm dev:web              # Arranca Panel Web Administrador (Vite — http://localhost:5173)
+pnpm start:employer       # Arranca App Móvil Empleador (Expo)
+pnpm start:worker         # Arranca App Móvil Trabajador (Expo)
+```
+
+---
+
+## 2. Estructura del repositorio (3 apps independientes + 3 paquetes compartidos)
 
 ```text
 .
 ├── apps/
-│   ├── mobile/                       # App Móvil — React Native (Empleador + Trabajador)
+│   ├── employer/                     # App Móvil Empleador — Expo + React Native (UI-EMP-01..14)
+│   │   ├── app.json / metro.config.js / tsconfig.json / App.tsx (pantalla en blanco)
 │   │   └── src/
-│   │       ├── components/           # Componentes compartidos entre módulos
-│   │       ├── features/<modulo>/    # Por funcionalidad (auth, jobs, applications, execution,
-│   │       │   ├── components/       #   payments, chat, cases, reviews, profile, notifications)
-│   │       │   └── screens/          # Pantallas con código UI-EMP-XX / UI-TRAB-XX
-│   │       ├── navigation/           # Configuración de navegación (Hito 4)
-│   │       ├── services/             # Re-exporta @trabajos/services (único acceso a datos)
+│   │       ├── components/           # Componentes propios de Empleador
+│   │       ├── features/<modulo>/    # auth, jobs, applications, execution, payments,
+│   │       │   ├── components/       #   chat, cases, reviews, profile
+│   │       │   └── screens/          # Pantallas UI-EMP-XX_<Nombre>.tsx
+│   │       ├── navigation/           # Navegación Empleador (Hito 4.1)
+│   │       ├── services/             # Re-exporta @trabajos/services
 │   │       └── theme/                # Re-exporta @trabajos/theme/native
-│   └── web/                          # Panel Web Administrador — React + Vite + Tailwind CSS
-│       ├── tailwind.config.cjs       # Carga el preset compartido de @trabajos/theme
+│   ├── worker/                       # App Móvil Trabajador — Expo + React Native (UI-TRAB-01..14)
+│   │   ├── app.json / metro.config.js / tsconfig.json / App.tsx (pantalla en blanco)
+│   │   └── src/
+│   │       ├── components/           # Componentes propios de Trabajador
+│   │       ├── features/<modulo>/    # auth, jobs, applications, execution, payments,
+│   │       │   ├── components/       #   chat, cases, reviews, profile, notifications
+│   │       │   └── screens/          # Pantallas UI-TRAB-XX_<Nombre>.tsx
+│   │       ├── navigation/           # Navegación Trabajador (Hito 4.2)
+│   │       ├── services/             # Re-exporta @trabajos/services
+│   │       └── theme/                # Re-exporta @trabajos/theme/native
+│   └── web/                          # Panel Web Administrador — React 18 + Vite + Tailwind (UI-ADM-01..07)
+│       ├── index.html / vite.config.ts / tailwind.config.cjs / tsconfig.json / src/App.tsx
 │       └── src/
-│           ├── components/           # Componentes compartidos del panel
-│           ├── features/<modulo>/    # Por funcionalidad (auth, cases, moderation, users, payments)
+│           ├── components/           # Componentes compartidos del panel web
+│           ├── features/<modulo>/    # auth, cases, moderation, users, payments
 │           │   ├── components/
-│           │   └── screens/          # Pantallas con código UI-ADM-XX
-│           ├── services/             # Re-exporta @trabajos/services (único acceso a datos)
+│           │   └── screens/          # Pantallas UI-ADM-XX_<Nombre>.tsx
+│           ├── services/             # Re-exporta @trabajos/services
 │           └── theme/                # Re-exporta @trabajos/theme
 ├── packages/
-│   ├── theme/                        # Tema compartido (tokens de Aleksey -> móvil + web)
-│   │   ├── tokens.json               # ÚNICA fuente de tokens (colores, fuentes, espaciado, radios)
-│   │   ├── tokens.ts                 # Exportación tipada en TypeScript
-│   │   ├── native.ts                 # Adaptador para React Native (StyleSheet + elevation)
-│   │   └── tailwind.preset.cjs       # Preset para Tailwind CSS (panel web)
-│   └── services/                     # Capa única de servicios (mock JSON hoy -> RPC 5.4 mañana)
+│   ├── ui/                           # @trabajos/ui — Componentes móviles compartidos entre employer y worker
+│   │   └── src/                      #   (components, chat, reviews, profile, notifications)
+│   ├── theme/                        # @trabajos/theme — Tema único para Expo y Tailwind CSS
+│   │   ├── tokens.json               #   ÚNICA fuente de tokens (colores, tipografía, espaciado, radios)
+│   │   ├── native.ts                 #   Adaptador React Native (StyleSheet + elevation)
+│   │   └── tailwind.preset.cjs       #   Preset Tailwind CSS consumido por apps/web
+│   └── services/                     # @trabajos/services — Capa única de datos (mock JSON -> RPC 5.4)
 │       └── src/
-│           ├── config.ts             # Interruptor único: dataSource = 'mock' | 'supabase'
-│           ├── types/database.ts     # Tipos alineados a 001_trabajos_temporales.sql
-│           ├── mocks/*.json          # Datos simulados (NUNCA importados por pantallas)
-│           └── modules/*.service.ts  # Módulos por dominio mapeados a las RPC de sección 5.4
+│           ├── config.ts             #   Interruptor único: dataSource = 'mock' | 'supabase'
+│           ├── types/database.ts     #   Tipos alineados a 001_trabajos_temporales.sql
+│           ├── mocks/*.json          #   Mocks ampliados (10 estados de trabajo, 9 perfiles, 17 postulaciones, 7 pagos)
+│           └── modules/*.service.ts  #   Servicios mapeados a las RPC de la sección 5.4
 └── supabase/migrations/
     └── 001_trabajos_temporales.sql   # Esquema PostgreSQL, RLS y RPC (fuente única de verdad)
 ```
 
 ---
 
-## 2. Cómo se comparte el tema entre Móvil y Web
+## 3. Tema compartido y capa única de servicios
 
-Se usa un paquete interno **`@trabajos/theme`** con **`packages/theme/tokens.json`** como única fuente de verdad (sin duplicar valores ni requerir compilación previa):
-
-1. **Aleksey** actualiza únicamente `packages/theme/tokens.json` con los colores, tipografías, espaciados, radios y sombras finales.
-2. **App Móvil (React Native)** importa `theme` desde `apps/mobile/src/theme` (`@trabajos/theme/native`), obteniendo valores numéricos listos para `StyleSheet` y sombras nativas.
-3. **Panel Web (React + Vite + Tailwind)** carga `packages/theme/tailwind.preset.cjs` en `apps/web/tailwind.config.cjs`, habilitando automáticamente las clases `bg-brand-primary`, `text-neutral-textPrimary`, etc., desde el mismo JSON.
+- **Tema (`@trabajos/theme`):** Aleksey actualiza solo `packages/theme/tokens.json`. `apps/employer` y `apps/worker` lo leen desde `src/theme` (`native.ts`), y `apps/web` lo consume automáticamente mediante `tailwind.preset.cjs` en `apps/web/tailwind.config.cjs`.
+- **Servicios (`@trabajos/services`):** Toda pantalla pide datos exclusivamente mediante `src/services` (o `@trabajos/services`). **Prohibido importar archivos de `packages/services/src/mocks/` desde una pantalla.** Hoy opera en `dataSource: 'mock'`; en Fase 1 se cambia a `'supabase'` sin tocar pantallas.
 
 ---
 
-## 3. Capa única de servicios (`@trabajos/services`)
+## 4. Reglas cortas del equipo y mapa de pantallas
 
-- **Un solo lugar para pedir datos:** toda pantalla en `apps/mobile` o `apps/web` importa únicamente desde `src/services` (o `@trabajos/services`). **Está prohibido importar archivos de `packages/services/src/mocks/` desde una pantalla.**
-- **Fase 0 (hoy):** `config.ts` opera con `dataSource: 'mock'`, devolviendo respuestas desde JSON simulados con los mismos tipos del esquema SQL.
-- **Fase 1 (después):** se cambia a `configureServices({ dataSource: 'supabase', supabaseRpc })` sin modificar ninguna pantalla. Los métodos ya están mapeados a las RPC de la **sección 5.4** (`complete_profile`, `accept_terms`, `save_worker_location`, `create_job`, `update_job`, `cancel_job`, `search_jobs`, `get_job_public`, `get_applicants`, `get_counterpart_contact`, `apply_to_job`, `withdraw_application`, `reject_application`, `select_worker`, `confirm_conditions`, `register_arrival`, `request_completion`, `verify_completion_code`, `renew_completion_code`). Las RPC aún no escritas en SQL están marcadas con `TODO(RPC pendiente en 5.4)`.
+1. **Nombres con código de pantalla:** `UI-EMP-01_AuthOnboarding.tsx`, `UI-TRAB-02_JobExplorer.tsx`, `UI-ADM-01_AdminLogin.tsx`.
+2. **Ramas por funcionalidad:** nunca subir directo a `main`; usar `feat/<codigo-o-modulo>`, `fix/<descripcion>` o `chore/<descripcion>`.
+3. **Revisión obligatoria:** todo cambio entra por Pull Request (`.github/PULL_REQUEST_TEMPLATE.md`) con **mínimo 1 aprobación** antes de hacer merge a `main`.
 
----
-
-## 4. Reglas cortas del equipo
-
-1. **Nombres de archivo con código de pantalla:** toda pantalla dentro de `features/<modulo>/screens/` debe iniciar con su código del Hito 3:
-   - Empleador: `UI-EMP-01_AuthOnboarding.tsx` … `UI-EMP-14_MyCases.tsx`
-   - Trabajador: `UI-TRAB-01_AuthOnboarding.tsx` … `UI-TRAB-14_Notifications.tsx`
-   - Admin: `UI-ADM-01_AdminLogin.tsx` … `UI-ADM-07_StripeMonitor.tsx`
-2. **Ramas por funcionalidad:** nunca trabajar directo sobre `main`. Crear una rama por tarea:
-   - `feat/<codigo-o-modulo>` (ej. `feat/UI-EMP-03-publish-job`), `fix/<descripcion>`, `chore/<descripcion>`.
-3. **Revisión obligatoria antes de unir a `main`:** todo cambio entra por **Pull Request** con la plantilla de `.github/PULL_REQUEST_TEMPLATE.md` y requiere **al menos 1 aprobación** de otro integrante antes de hacer merge.
-
-### Mapa rápido de pantallas por carpeta (`features/`)
-
-| App | Carpeta `features/` | Códigos de pantalla (Hito 3) |
+| App | Ruta base de pantallas | Módulos `features/` y códigos de pantalla (Hito 3) |
 | :--- | :--- | :--- |
-| **Móvil** | `auth` / `jobs` / `applications` | `UI-EMP-01`, `UI-TRAB-01` / `UI-EMP-02..04`, `UI-TRAB-02..04` / `UI-EMP-05`, `UI-TRAB-05` |
-| **Móvil** | `execution` / `payments` / `chat` | `UI-EMP-06,09`, `UI-TRAB-07,09` / `UI-EMP-07,12`, `UI-TRAB-06,13` / `UI-EMP-08`, `UI-TRAB-08` |
-| **Móvil** | `cases` / `reviews` / `profile` / `notifications` | `UI-EMP-10,14`, `UI-TRAB-10` / `UI-EMP-11`, `UI-TRAB-11` / `UI-EMP-13`, `UI-TRAB-12` / `UI-TRAB-14` |
-| **Web** | `auth` / `cases` / `moderation` / `users` / `payments` | `UI-ADM-01` / `UI-ADM-02..04` / `UI-ADM-05` / `UI-ADM-06` / `UI-ADM-07` |
+| **Empleador** | `apps/employer/src/features/<mod>/screens/` | `auth` (`UI-EMP-01`), `jobs` (`02..04`), `applications` (`05`), `execution` (`06,09`), `payments` (`07,12`), `chat` (`08`), `cases` (`10,14`), `reviews` (`11`), `profile` (`13`) |
+| **Trabajador** | `apps/worker/src/features/<mod>/screens/` | `auth` (`UI-TRAB-01`), `jobs` (`02..04`), `applications` (`05`), `payments` (`06,13`), `execution` (`07,09`), `chat` (`08`), `cases` (`10`), `reviews` (`11`), `profile` (`12`), `notifications` (`14`) |
+| **Panel Web** | `apps/web/src/features/<mod>/screens/` | `auth` (`UI-ADM-01`), `cases` (`02..04`), `moderation` (`05`), `users` (`06`), `payments` (`07`) |
 
----
-
-## 5. Variables de entorno (Stripe Connect y Supabase)
-
-Copiar `.env.example` a `.env` al iniciar Fase 1 (nunca subir `.env` al repositorio). Para Fase 1 se requiere cuenta plataforma de **Stripe en modo de prueba con Connect activado** (`pk_test_...` / `sk_test_...`).
+> **Variables de entorno:** Copiar `.env.example` a `.env` local al iniciar Fase 1 (nunca subir `.env` a Git).

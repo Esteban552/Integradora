@@ -1,0 +1,17 @@
+{
+  "name": "@trabajos/ui",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Componentes móviles compartidos entre apps/employer y apps/worker (chat, evaluación, perfil, notificaciones y UI base)",
+  "main": "./src/index.ts",
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@trabajos/theme": "workspace:*"
+  },
+  "peerDependencies": {
+    "react": ">=18.0.0",
+    "react-native": ">=0.74.0"
+  }
+}
