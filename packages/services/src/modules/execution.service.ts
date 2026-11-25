@@ -12,7 +12,7 @@ import type {
  * Servicio de ejecución del trabajo asignado (condiciones, llegada y finalización).
  * RPCs sección 5.4: confirm_conditions, register_arrival, request_completion,
  * verify_completion_code, renew_completion_code.
- * Pendiente en 5.4: respond_completion.
+ * RPC real adicional: respond_completion (003).
  */
 export const executionService = {
   async confirmConditions(jobId: UUID): Promise<void> {
@@ -67,19 +67,23 @@ export const executionService = {
     throw new Error('ERR_NOT_IMPLEMENTED_SUPABASE_CLIENT');
   },
 
-  /** TODO(RPC pendiente en 5.4): confirmar o impugnar finalización sin código. */
+  /**
+   * Solo el empleador, solo en finalización sin código (RF-23, RF-24).
+   * confirm -> Completado (devuelve null). dispute -> abre una reclamación (descripción de 10 a 2000
+   * caracteres, obligatoria) y devuelve el id del caso.
+   */
   async respondCompletion(
     jobId: UUID,
     action: 'confirm' | 'dispute',
-    notes?: string
-  ): Promise<void> {
+    description?: string
+  ): Promise<UUID | null> {
     if (getServiceConfig().dataSource === 'mock') {
-      return;
+      return action === 'dispute' ? 'dddd1111-1111-4111-8111-999999999998' : null;
     }
-    return callRpc<void>('respond_completion', {
+    return callRpc<UUID | null>('respond_completion', {
       p_job: jobId,
-      p_action: action,
-      p_notes: notes ?? null,
+      p_accept: action === 'confirm',
+      p_description: description ?? null,
     });
   },
 };

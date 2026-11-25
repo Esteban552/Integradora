@@ -5,7 +5,8 @@
   "description": "Capa única de servicios: lee JSON simulado en Fase 0 y llamará a las RPC de Supabase (sección 5.4) en Fase 1+",
   "main": "./src/index.ts",
   "scripts": {
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test": "npx --yes tsx --test src/mocks/mocks.test.ts"
   },
   "exports": {
     ".": "./src/index.ts"
