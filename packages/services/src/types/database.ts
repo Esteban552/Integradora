@@ -139,6 +139,11 @@ export interface Job {
   updated_at: string;
 }
 
+/** Trabajo del empleador con el número de postulaciones activas (pendientes o aceptadas), para la lista UI-EMP-02. */
+export interface EmployerJobSummary extends Job {
+  applicants_count: number;
+}
+
 export interface JobPrivate {
   job_id: UUID;
   exact_address: string;
@@ -218,6 +223,8 @@ export interface CaseRecord {
   resolved_at: string | null;
   closed_at: string | null;
   auto_close_deadline: string | null;
+  /** Una sola objeción por caso (003/004). */
+  objected_at: string | null;
   created_at: string;
   updated_at: string;
 }

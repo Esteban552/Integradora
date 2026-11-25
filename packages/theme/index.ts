@@ -1,6 +1,7 @@
-export { tokens } from './tokens';
+export { tokens, design } from './tokens';
 export type {
   ThemeTokens,
+  DesignTokens,
   ColorTokens,
   TypographyTokens,
   SpacingTokens,

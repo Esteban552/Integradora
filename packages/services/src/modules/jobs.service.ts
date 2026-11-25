@@ -1,9 +1,11 @@
 import { callRpc, getServiceConfig } from '../config';
+import applicationsMock from '../mocks/applications.json';
 import jobsData from '../mocks/jobs.json';
 import profilesMock from '../mocks/profiles.json';
 import reviewsMock from '../mocks/reviews.json';
 import type {
   CounterpartContact,
+  EmployerJobSummary,
   Job,
   JobCategory,
   JobPrivate,
@@ -47,6 +49,25 @@ export const jobsService = {
       return (jobsData.jobs as Job[]).filter((j) => j.employer_id === employerId);
     }
     // Fase 1: SELECT * FROM jobs WHERE employer_id = auth.uid() (RLS)
+    throw new Error('ERR_NOT_IMPLEMENTED_SUPABASE_CLIENT');
+  },
+
+  /**
+   * Lista de UI-EMP-02: trabajos propios con su conteo de postulaciones activas (pending + accepted).
+   * Fase 1: SELECT jobs.*, count de job_applications (RLS: el dueño ve las postulaciones de sus trabajos).
+   */
+  async getEmployerJobSummaries(employerId: UUID): Promise<EmployerJobSummary[]> {
+    if (getServiceConfig().dataSource === 'mock') {
+      const apps = applicationsMock as Array<{ job_id: UUID; status: string }>;
+      return (jobsData.jobs as Job[])
+        .filter((j) => j.employer_id === employerId)
+        .map((j) => ({
+          ...j,
+          applicants_count: apps.filter(
+            (a) => a.job_id === j.id && (a.status === 'pending' || a.status === 'accepted')
+          ).length,
+        }));
+    }
     throw new Error('ERR_NOT_IMPLEMENTED_SUPABASE_CLIENT');
   },
 
