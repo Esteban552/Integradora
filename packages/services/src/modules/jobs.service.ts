@@ -81,7 +81,9 @@ export const jobsService = {
 
   async createJob(params: SaveJobParams): Promise<UUID> {
     if (getServiceConfig().dataSource === 'mock') {
-      return 'aaaa1111-1111-4111-8111-999999999999';
+      // Simulado: devuelve el id de un trabajo existente del empleador demo (Casa Blanca Eventos)
+      // para que el detalle (UI-EMP-04) abra con datos. No se agrega el trabajo nuevo a la lista.
+      return 'aaaa1111-1111-4111-8111-111111111102';
     }
     return callRpc<UUID>('create_job', {
       p_title: params.title,
