@@ -4,16 +4,17 @@ import { StatusBar } from 'expo-status-bar';
 import type { Profile } from '@trabajos/services';
 import { Button } from '@trabajos/ui';
 import { EmployerAuthScreen } from './src/features/auth';
-import { EmployerFeedScreen, EmployerJobFormScreen } from './src/features/jobs';
+import { EmployerFeedScreen, EmployerJobDetailScreen, EmployerJobFormScreen } from './src/features/jobs';
 import { theme } from './src/theme';
 
 type Route =
   | { name: 'feed' }
   | { name: 'form'; jobId: string | null }
+  | { name: 'detail'; jobId: string }
   | { name: 'pending'; label: string };
 
 /**
- * Fase 1: UI-EMP-01, UI-EMP-02 y UI-EMP-03 conectadas. La navegación completa (src/navigation/)
+ * Fase 1: UI-EMP-01 a UI-EMP-04 conectadas. La navegación completa (src/navigation/)
  * se agrega cuando se defina la librería de navegación del equipo; mientras tanto
  * las pantallas que faltan muestran un marcador con botón para volver.
  */
@@ -49,8 +50,24 @@ export default function App() {
         <EmployerJobFormScreen
           employer={profile}
           jobId={route.jobId}
-          onCancel={() => setRoute({ name: 'feed' })}
-          onDone={() => setRoute({ name: 'pending', label: 'UI-EMP-04 (detalle de la publicación)' })}
+          onCancel={() => setRoute(route.jobId ? { name: 'detail', jobId: route.jobId } : { name: 'feed' })}
+          onDone={(id) => setRoute({ name: 'detail', jobId: id })}
+        />
+      </>
+    );
+  }
+
+  if (route.name === 'detail') {
+    return (
+      <>
+        <StatusBar style="dark" />
+        <EmployerJobDetailScreen
+          employer={profile}
+          jobId={route.jobId}
+          onBack={() => setRoute({ name: 'feed' })}
+          onEdit={(id) => setRoute({ name: 'form', jobId: id })}
+          onReviewApplicant={() => setRoute({ name: 'pending', label: 'UI-EMP-05 (perfil del postulante y selección)' })}
+          onCancelled={() => setRoute({ name: 'feed' })}
         />
       </>
     );
@@ -62,7 +79,9 @@ export default function App() {
       <EmployerFeedScreen
         employer={profile}
         onCreate={() => setRoute({ name: 'form', jobId: null })}
-        onOpenJob={(_id, destination) => setRoute({ name: 'pending', label: destination })}
+        onOpenJob={(id, destination) =>
+          setRoute(destination === 'UI-EMP-04' ? { name: 'detail', jobId: id } : { name: 'pending', label: destination })
+        }
       />
     </>
   );
