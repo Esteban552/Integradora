@@ -4,17 +4,23 @@ import { StatusBar } from 'expo-status-bar';
 import type { Profile } from '@trabajos/services';
 import { Button } from '@trabajos/ui';
 import { EmployerAuthScreen } from './src/features/auth';
-import { EmployerFeedScreen, EmployerJobDetailScreen, EmployerJobFormScreen } from './src/features/jobs';
+import {
+  EmployerApplicantScreen,
+  EmployerFeedScreen,
+  EmployerJobDetailScreen,
+  EmployerJobFormScreen,
+} from './src/features/jobs';
 import { theme } from './src/theme';
 
 type Route =
   | { name: 'feed' }
   | { name: 'form'; jobId: string | null }
   | { name: 'detail'; jobId: string }
+  | { name: 'applicant'; jobId: string; applicationId: string }
   | { name: 'pending'; label: string };
 
 /**
- * Fase 1: UI-EMP-01 a UI-EMP-04 conectadas. La navegación completa (src/navigation/)
+ * Fase 1: UI-EMP-01 a UI-EMP-05 conectadas. La navegación completa (src/navigation/)
  * se agrega cuando se defina la librería de navegación del equipo; mientras tanto
  * las pantallas que faltan muestran un marcador con botón para volver.
  */
@@ -66,8 +72,24 @@ export default function App() {
           jobId={route.jobId}
           onBack={() => setRoute({ name: 'feed' })}
           onEdit={(id) => setRoute({ name: 'form', jobId: id })}
-          onReviewApplicant={() => setRoute({ name: 'pending', label: 'UI-EMP-05 (perfil del postulante y selección)' })}
+          onReviewApplicant={(id, applicationId) => setRoute({ name: 'applicant', jobId: id, applicationId })}
           onCancelled={() => setRoute({ name: 'feed' })}
+        />
+      </>
+    );
+  }
+
+  if (route.name === 'applicant') {
+    return (
+      <>
+        <StatusBar style="dark" />
+        <EmployerApplicantScreen
+          employer={profile}
+          jobId={route.jobId}
+          applicationId={route.applicationId}
+          onBack={() => setRoute({ name: 'detail', jobId: route.jobId })}
+          onSelected={() => setRoute({ name: 'pending', label: 'UI-EMP-06 (trabajo asignado)' })}
+          onRejected={(id) => setRoute({ name: 'detail', jobId: id })}
         />
       </>
     );

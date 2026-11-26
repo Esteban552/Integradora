@@ -5,3 +5,5 @@ export { EmployerJobFormScreen } from './screens/EmployerJobFormScreen';
 export type { EmployerJobFormScreenProps } from './screens/EmployerJobFormScreen';
 export { EmployerJobDetailScreen } from './screens/EmployerJobDetailScreen';
 export type { EmployerJobDetailScreenProps } from './screens/EmployerJobDetailScreen';
+export { EmployerApplicantScreen } from './screens/EmployerApplicantScreen';
+export type { EmployerApplicantScreenProps } from './screens/EmployerApplicantScreen';
